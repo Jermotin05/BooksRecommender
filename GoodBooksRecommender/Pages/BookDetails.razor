@@ -1,0 +1,267 @@
+﻿@inject IJSRuntime JSRuntime
+@page "/bookDetails/{bookID}/{userID}"
+
+@inject NavigationManager NavigationManager
+@inherits Base
+
+@using GoodBooksRecommender._Objects
+@using GoodBooksRecommender.Services
+@inject AppService AppSvc
+
+
+<section class="product-grid p-bottom-100">
+    <div class="col-md-12 col-lg-12">
+        <h2 style="padding-bottom:20px;">@SelectedBook.Title</h2>
+        <div style="padding-bottom:20px;" class="col-md-12 row">
+            <ul class="titlebtm" style="align-content:center">
+                <li>
+                    <h5 style="text-decoration:underline;text-align:center;"><a>@SelectedBook.Authors</a></h5>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-12 row" style="padding-bottom:50px;">
+            <div class="col-md3">
+                <h5 style="margin-top:10px;text-align:center;">My Rating: </h5>
+            </div>
+            <div class="col-md-9">
+                <input style="max-width:100px" class="text_field" type="number" @bind="@BookRating" />
+            </div>
+        </div>
+        @if (ShowInvalidRating)
+        {
+            <div class="col-md-12 row" style="padding-bottom:50px;">                
+                <h5 style="margin-top:10px;color:red">Rating must be between 0-5</h5>                
+            </div>
+        }
+    </div>   
+    <h2 style="text-align:center;text-decoration:underline;padding-bottom:25px;">Similar Books</h2>    
+    <div class="container">
+        <div class="row">
+            <!-- Start .product-list -->
+            <div class="col-md-12 product-list">
+                <div class="row">
+                    @foreach (var book in SimilarBooks)
+                    {
+                        <div class="col-lg-4 col-md-6">
+                            <div class="product-single latest-single" style="cursor:pointer" @onclick='((e)=>NavigateToDetails(book.BookID))'>
+                                <!-- Ends: .product-thumb -->
+                                <div class="product-excerpt" style="        border-color: black;
+        border-width: thin;
+        border-style: solid;
+        min-height: 490px;">
+                                    <h3>
+                                        <a>@book.Title</a>
+                                    </h3>
+                                    <ul class="titlebtm">
+                                        <li>
+                                            <h5 style="text-decoration:underline;"><a>@book.Authors</a></h5>
+                                        </li>
+                                    </ul>
+                                    <ul class="product-facts clearfix">
+                                        <li class="product_cat">
+                                            <p><a>ISBN: @book.ISBN</a></p>
+                                        </li>
+                                        <li class="product_cat">
+                                            <p><a>ISBN(13): @book.ISBN13</a></p>
+                                        </li>
+                                        <li class="product_cat">
+                                            <p><a>Ratings Count: @book.Ratings_Count</a></p>
+                                        </li>
+                                    </ul>
+
+                                    <ul class="product-facts clearfix">
+                                        <li class="price">Pages: @book.NumPages</li>
+
+                                        @if (UserBooks.Any(ub => ub.BookID == book.BookID))
+                                        {
+                                            <li style="cursor:pointer;" class="product-fav" @onclick='((e)=>RemoveFromUserCollection(book))'>
+                                                <i class="fas fa-heart"></i>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="product-fav" @onclick='((e)=>AddToUserCollection(book))'>
+                                                <span class="icon-heart" title="Add to collection/Mark Read" data-toggle="tooltip"></span>
+                                            </li>
+                                        }
+
+                                        <li class="product-rating" title="Average Rating: @(book.AverageRating)">
+                                            @{
+                                                var fullstars = Convert.ToInt32(book.AverageRating.Substring(0, 1));
+                                                var halfstar = false;
+                                                var nostars = 0;
+                                                var decimals = Convert.ToInt32(book.AverageRating.Substring(2));
+                                                if (decimals >= 25 && decimals < 75)
+                                                {
+                                                    halfstar = true;
+                                                }
+                                                else if (decimals >= 75)
+                                                {
+                                                    fullstars += 1;
+                                                }
+
+                                                switch (fullstars)
+                                                {
+                                                    case 0:
+                                                        if (halfstar)
+                                                            nostars = 4;
+                                                        else
+                                                            nostars = 5;
+                                                        break;
+                                                    case 1:
+                                                        if (halfstar)
+                                                            nostars = 3;
+                                                        else
+                                                            nostars = 4;
+                                                        break;
+                                                    case 2:
+                                                        if (halfstar)
+                                                            nostars = 2;
+                                                        else
+                                                            nostars = 3;
+                                                        break;
+                                                    case 3:
+                                                        if (halfstar)
+                                                            nostars = 1;
+                                                        else
+                                                            nostars = 2;
+                                                        break;
+                                                    case 4:
+                                                        if (halfstar)
+                                                            nostars = 0;
+                                                        else
+                                                            nostars = 1;
+                                                        break;
+                                                    case 5:
+                                                        if (halfstar)
+                                                            nostars = 0;
+                                                        else
+                                                            nostars = 0;
+                                                        break;
+                                                    default:
+                                                        nostars = 0;
+                                                        break;
+                                                }
+
+
+                                            }
+                                            <ul class="list-unstyled">
+                                                @for (var i = 0; i < fullstars; i++)
+                                                {
+                                                    <li style="color:#ffb822"><i class="fas fa-star"></i></li>
+                                                }
+                                                @if (halfstar)
+                                                {
+                                                    <li style="color:#ffb822"><i class="fas fa-star-half-alt"></i></li>
+                                                }
+                                                @for (var i = 0; i < nostars; i++)
+                                                {
+                                                    <li style="color:#ffb822"><i class="far fa-star"></i></li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- Ends: .product-excerpt -->
+                            </div><!-- Ends: .product-single -->
+                        </div><!-- ends: .col-lg-4 -->
+                    }
+
+                </div>
+            </div>
+            <!-- Ends: .product-list -->
+        </div>
+    </div>
+</section><!-- ends: .product-grid -->
+
+@code {
+    [Parameter]
+    public string userID { get; set; }
+    [Parameter]
+    public string bookID { get; set; }
+    public List<Book> SimilarBooks { get; set; }
+    public Book SelectedBook { get; set; }
+    public bool ShowInvalidRating { get; set; } = false;
+    private float _bookRating { get; set; }
+    public float BookRating
+    {
+        get { return _bookRating;}
+        set
+        {
+            _bookRating = value;
+            SaveUserRating(value);
+
+        }
+    }
+
+    private void SaveUserRating(float rate)
+    {
+        if(rate >= 0 && rate < 6)
+        {
+            var rating = new UserRating()
+            {
+                BookID = bookID,
+                UserID = UserID,
+                Rating = rate
+            };
+            AppSvc.SaveUserRating(rating);
+        }
+        else
+        {
+            ShowInvalidRating = true;
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        SelectedBook = AppSvc.GetBookByID(bookID);
+        SimilarBooks = AppSvc.GetSimilarBooks(bookID);
+
+        //Update User Books
+        _bookRating = AppSvc.GetBookRating(bookID,userID);
+    }
+
+    //Add this book to this users read books
+    public void AddToUserCollection(Book _book)
+    {
+        var userBook = new UserBook()
+        {
+            UserID = UserID,
+            BookID = _book.BookID,
+            Title = _book.Title,
+            Authors = _book.Authors,
+            AverageRating = _book.AverageRating,
+            ISBN = _book.ISBN,
+            ISBN13 = _book.ISBN13,
+            Language = _book.ISBN13,
+            NumPages = _book.NumPages,
+            PublicationDate = _book.PublicationDate,
+            Publisher = _book.Publisher,
+            Ratings_Count = _book.Ratings_Count,
+            TextReviews_count = _book.TextReviews_count
+        };
+
+        UserBooks.Add(userBook);
+        AppSvc.MarkBookRead(userBook);
+    }
+
+    //remove this book from users read books
+    public void RemoveFromUserCollection(Book _book)
+    {
+        var userBook = new UserBook()
+        {
+            UserID = UserID,
+            BookID = _book.BookID,
+        };
+
+        UserBooks.Remove(userBook);
+        AppSvc.RemoveUserBook(userBook);
+        UserBooks = AppSvc.GetUserBooks(UserID).OrderBy(b => b.BookID).ToList();
+    }
+
+    private void NavigateToDetails(string bookId)
+    {
+        NavigationManager.NavigateTo("/bookDetails/" + bookId + "/" + UserID);
+    }
+
+}

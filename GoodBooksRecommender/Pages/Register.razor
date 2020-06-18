@@ -1,0 +1,190 @@
+﻿@inject IJSRuntime JSRuntime
+@page "/register"
+
+@inject NavigationManager NavigationManager
+@inherits Base
+
+@using GoodBooksRecommender._Objects
+@using GoodBooksRecommender.Services
+@inject AppService AppSvc
+
+
+<section class="signup_area section--padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3">
+                <div class="cardify signup_form">
+                    <div class="login--header">
+                        <h3>Create Your Account</h3>
+                        <p>
+                            Please fill the following fields with appropriate information to register a new Digi-EMakers
+                            account.
+                        </p>
+                    </div><!-- end .login_header -->
+                    <div class="login--form">
+                        <div class="form-group">
+                            <label for="fname">First Name</label>
+                            <input id="fname" @bind="FirstName" type="text" class="text_field" placeholder="Enter your First Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="lname">Last Name</label>
+                            <input id="lname" @bind="LastName" type="text" class="text_field" placeholder="Enter your Last Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="email_ad">User Name</label>
+                            <input id="email_ad" @bind="UserName" type="text" class="text_field" placeholder="Enter your email address">
+                        </div>
+                        <div class="form-group">
+                            <label for="email_ad">Email Address</label>
+                            <input id="email_ad" @bind="Email" type="text" class="text_field" placeholder="Enter your email address">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone_ad">Phone</label>
+                            <input id="phone_ad" @bind="Phone" type="text" class="text_field" placeholder="Enter your phone number">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input id="password" @bind="Password" type="text" class="text_field" placeholder="Enter your password...">
+                        </div>
+                        <div class="form-group">
+                            <label for="con_pass">Confirm Password</label>
+                            <input id="con_pass" @bind="ConfirmPassword" type="text" class="text_field" placeholder="Confirm password">
+                        </div>
+                        @if (ShowInvalid)
+                        {
+                            <div>
+                                @foreach (var message in InvalidMessages)
+                                {
+                                    <input type="text" disabled style="color:red;" value="@message" />
+                                    <br />
+                                }
+                            </div>
+                        }
+                        <button class="btn btn--md register_btn btn-primary" @onclick="((e)=>RegisterNewUser())">Register Now</button>
+                        <div class="login_assist">
+                            <p>
+                                Already have an account?
+                                <a @onclick='(GoToLogin)'>Login</a>
+                            </p>
+                        </div>
+                    </div><!-- end .login--form -->
+                </div><!-- end .cardify -->
+            </div><!-- end .col-md-6 -->
+        </div><!-- end .row -->
+    </div><!-- end .container -->
+</section><!-- ends: .signup_area -->
+
+
+@code {
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Email { get; set; }
+    public string UserName { get; set; }
+    public string Phone { get; set; }
+    public string Password { get; set; }
+    public string ConfirmPassword { get; set; }
+
+    private bool IsValid { get; set; } = false;
+    private bool ShowInvalid { get; set; } = false;
+    private List<string> InvalidMessages { get; set; }
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+    private void CheckIfValid()
+    {
+        IsValid = true;
+        InvalidMessages = new List<string>();
+
+        if (FirstName == "" && LastName == "")
+        {
+            IsValid = false;
+            ShowInvalid = true;
+            InvalidMessages.Add("Must enter first and last name");
+        }
+
+        if (!CheckIfEmailIsAvailable(Email) || !IsEmailValidFormat(Email))
+        {
+            IsValid = false;
+            ShowInvalid = true;
+            InvalidMessages.Add("Email is already taken or invalid");
+        }
+        if (!IsPhoneValidFormat(Phone))
+        {
+            IsValid = false;
+            ShowInvalid = true;
+            InvalidMessages.Add("Phone is in invalid format");
+        }
+
+        if (!IsPasswordValidFormat(Password))
+        {
+            IsValid = false;
+            ShowInvalid = true;
+            InvalidMessages.Add("Password not in the correct format");
+        }
+
+        if (Password != ConfirmPassword)
+        {
+            IsValid = false;
+            ShowInvalid = true;
+            InvalidMessages.Add("Passwords do not match");
+        }
+
+    }
+
+    private void GoToLogin()
+    {
+        IsRegistering = false;
+        NavigationManager.NavigateTo("/login");
+    }
+
+    private void RegisterNewUser()
+    {
+        CheckIfValid();
+
+        if (IsValid)
+        {
+            var user = new User()
+            {
+                FirstName = this.FirstName,
+                LastName = this.LastName,
+                Email = this.Email,
+                Phone = this.Phone,
+                Password = this.Password,
+                Username = this.UserName
+
+            };
+
+            try
+            {
+                //Register the user and log them in
+                AppSvc.RegisterNewUser(user);
+
+                //Validate the user
+                UserDetails = AppSvc.VerifyLogin(UserName, Password);
+
+
+                if(UserDetails!=null)
+                {
+                    //Get list of books user has read
+                    UserBooks = AppSvc.GetUserBooks(UserID).OrderBy(b => b.BookID).ToList();
+                    RecommendedBooks = AppSvc.GetUserRecommendations(UserID).ToList();
+                    UserID = UserDetails.ID.ToString();
+                    IsRegistering = false;
+                    NavigationManager.NavigateTo("/dashboard/" + UserDetails.ID, true);
+                }
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+
+        }
+    }
+
+
+}

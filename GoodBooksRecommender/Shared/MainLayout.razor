@@ -1,0 +1,103 @@
+﻿@inherits GoodBooksRecommender.Pages.Base
+@inject NavigationManager NavigationManager
+@using GoodBooksRecommender.Pages
+
+@using GoodBooksRecommender._Objects
+@using GoodBooksRecommender.Services
+@inject AppService AppSvc
+
+@if (IsValidUser())
+{
+    <div class="sidebar" style="display:@NavMenuCssClass">
+        <NavMenu />
+    </div>
+
+    <div class="main">
+        <div class="top-row navbar navbar-dark " style="background-color:#383d41;z-index:9999;">
+            <button @onclick="ShowSidebar" class="float-left navbar-toggler" style="margin-right: 84%;margin-top:-20px;border-radius:5px;background-color:black;display:@SideBarCssClass">
+                <span class="navbar-toggler-icon" style="background-color:black"></span>
+            </button>
+
+            <div class="right-content">
+                <div class="information">
+                    @*<span class="e-avatar e-avatar-medium e-avatar-circle image"></span>*@
+                    <div class="text-content" style="width:200px !important;color:white">@FirstName @LastName</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+}
+else
+{
+    @if (IsRegistering)
+    {
+        <div class="main col-md-12">
+            <Register></Register>
+        </div>
+    }
+    else
+    {
+        <div class="main col-md-12">
+            <Login></Login>
+        </div>
+    }
+}
+
+@code{
+
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    private string NavMenuCssClass { get; set; }
+    private string SideBarCssClass => NavMenuCssClass == "none" ? "block" : "none";
+
+
+    protected override void OnInitialized()
+    {
+        if (UserDetails != null && UserDetails.FirstName != null)
+        {
+            FirstName = UserDetails.FirstName;
+            LastName = UserDetails.LastName;
+        }
+        else
+        {
+            FirstName = "";
+        }
+    }
+
+
+    //If user has an id then its a valid user
+    private bool IsValidUser()
+    {
+        if (UserDetails != null && UserDetails.ID != new MongoDB.Bson.ObjectId())
+            return true;
+        else
+            return false;
+    }
+
+    public void ShowSidebar()
+    {
+        NavMenuCssClass = "block";
+    }
+
+    //Callback to toggle sidebar
+    public void SidebarHandler(bool collapse)
+    {
+        if (collapse)
+            NavMenuCssClass = "none";
+        else
+            NavMenuCssClass = "block";
+    }
+
+}
+<style>
+    .text-content {
+        font-size: 17px;
+        line-height: 17px;
+        margin-top: 10px;
+        margin-left: 10px;
+    }
+</style>

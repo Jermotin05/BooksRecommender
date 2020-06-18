@@ -1,0 +1,47 @@
+﻿@inject IJSRuntime JSRuntime
+@using GoodBooksRecommender.Pages
+@inject NavigationManager NavigationManager
+@inherits Base
+
+@using GoodBooksRecommender._Objects
+@using GoodBooksRecommender.Services
+@inject AppService AppSvc
+
+<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">GoodBooks Recommender</a>
+    <button class="navbar-toggler">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div>
+    <ul class="nav flex-column">
+        <li class="nav-item px-3" style="cursor:pointer;">
+            <NavLink class="nav-link"  @onclick='((e)=>OnNavigate("dashboard"))'>
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </li>
+        <li class="nav-item px-3" style="cursor:pointer;">
+            <NavLink class="nav-link" @onclick='((e)=>OnNavigate("Books"))'>
+                <span class="oi oi-plus" aria-hidden="true"></span> Books
+            </NavLink>
+        </li>
+    </ul>
+</div>
+
+@code {
+
+    private void OnNavigate(string component, bool appendUserID = true)
+    {
+        if(UserID != null)
+        {
+            NavigationManager.NavigateTo("/"+component + (appendUserID ? ("/"+UserID) : ""));
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+
+    }
+
+}

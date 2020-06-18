@@ -1,0 +1,184 @@
+﻿@inherits Base
+@page "/login"
+@inject NavigationManager NavigationManager
+
+@using GoodBooksRecommender._Objects
+@using GoodBooksRecommender.Services
+@inject AppService AppSvc
+
+
+
+<section class="login_area section--padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2">
+                <div class="cardify login">
+                    <div class="login--header">
+                        <h3>Welcome Back</h3>
+                        <p>You can sign in with your registered email</p>
+                    </div><!-- end .login_header -->
+                    <div class="login--form">
+                        <div class="form-group">
+                            <label for="user_name">Username</label>
+                            <input @bind="UserName" id="user_name" type="text" class="text_field" placeholder="Enter your email...">
+                        </div>
+                        <div class="form-group">
+                            <label for="pass">Password</label>
+                            <input @bind="Password" id="pass" type="text" class="text_field" placeholder="Enter your password...">
+                        </div>
+                        <button class="btn btn--md btn-primary" @onclick="((e)=>VerifyLogin())">Login Now</button>
+
+                        @if (ShowInvalidLoginMessage)
+                        {
+                            <div style="padding-top:10px;">
+                                <span style="color:red;">Invalid Login, Please try again.</span>
+                            </div>
+                        }
+
+                        <div class="login_assist">
+                            <p class="signup" style="cursor:pointer;">
+                                Don't have an
+                                <a @onclick='((e)=>RegisterNewUser())'>account</a>?                                
+                            </p>
+                        </div>
+                    </div><!-- end .login--form -->
+                </div><!-- end .cardify -->
+            </div><!-- end .col-md-6 -->
+        </div><!-- end .row -->
+    </div><!-- end .container -->
+</section><!-- ends: .login_area -->
+<div class="main col-md-12" style="display:none">
+    <Register></Register>
+</div>
+
+
+@code {
+    private string UserName { get; set; }
+    private string Password { get; set; }
+    public bool ShowInvalidLoginMessage { get; set; } = false;
+    private string IsRegisteringCSS => IsRegistering ? "block" : "none";
+
+    protected override void OnInitialized()
+    {
+        UserName = "DefaultUser";
+        Password = "password";
+
+        UserDetails = new User();
+    }
+
+    private void VerifyLogin()
+    {
+        if (UserName != null && Password != null)
+        {
+            UserDetails = AppSvc.VerifyLogin(UserName, Password);
+            if (UserDetails != null && UserDetails.ID != null)
+            {
+                UserID = UserDetails.ID.ToString();
+
+                //Get list of books user has read
+                UserBooks = AppSvc.GetUserBooks(UserID).OrderBy(b => b.BookID).ToList();
+                RecommendedBooks = AppSvc.GetUserRecommendations(UserID).ToList();
+
+                //go to index
+                NavigationManager.NavigateTo("/dashboard/" + UserDetails.ID);
+            }
+            else
+            {
+                //Show Invalid user
+                ShowInvalidLoginMessage = true;
+            }
+        }
+        else
+        {
+            ShowInvalidLoginMessage = true;
+        }
+    }
+
+
+    private void RegisterNewUser()
+    {
+        //Register a new user
+        IsRegistering = true;
+        AppSvc.IsRegistering = true;
+        NavigationManager.NavigateTo("/register");
+
+    }
+
+}
+
+
+<style>
+    body {
+        font-family: "Lato", sans-serif;
+    }
+
+
+
+    .main-head {
+        height: 150px;
+        background: #FFF;
+    }
+
+    .sidenav {
+        height: 100%;
+        background-color: #000;
+        overflow-x: hidden;
+        padding-top: 20px;
+    }
+
+
+    .main {
+        padding: 0px 10px;
+    }
+
+    @@media screen and (max-height: 450px) {
+        .sidenav {
+            padding-top: 15px;
+        }
+    }
+
+    @@media screen and (max-width: 450px) {
+        .login-form {
+            margin-top: 10%;
+        }
+
+        .register-form {
+            margin-top: 10%;
+        }
+    }
+
+    @@media screen and (min-width: 768px) {
+   
+        .sidenav {
+            width: 40%;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+        }
+
+        .login-form {
+            margin-top: 80%;
+        }
+
+        .register-form {
+            margin-top: 20%;
+        }
+    }
+
+
+    .login-main-text {
+        margin-top: 20%;
+        padding: 60px;
+        color: #fff;
+    }
+
+        .login-main-text h2 {
+            font-weight: 300;
+        }
+
+    .btn-black {
+        background-color: #000 !important;
+        color: #fff;
+    }
+</style>
