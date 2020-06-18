@@ -1,0 +1,212 @@
+
+#!/usr/bin/python
+import datetime
+import json
+from bson import json_util
+import bottle
+from bottle import route, run, get, post,request, abort, template, static_file,response
+from wtforms.validators import ValidationError
+from pymongo import MongoClient
+
+def DBConnection(database='market',collection='stocks'):
+    connection = MongoClient("mongodb+srv://School:CS340Password@jscluster0-tml9y.mongodb.net/test?retryWrites=true&w=majority")
+    db = connection[database]
+    collection = db[collection]
+    return collection
+
+@route('/createStock/<ticker>',method='POST')
+def CreateStock(ticker):
+    try:
+        # get body data that will update ticker
+        body = request.body.getvalue().decode('utf-8')
+
+        # convert body to a dictionary
+        document = json.loads(body)
+        # add ticker data to the dictionary
+        document['Ticker'] = ticker
+
+        #insert the document
+        result = DBConnection().save(document)
+        response.status = 200
+
+    except ValidationError as ve:
+        response.status = 404
+        abort(400, str(ve))
+
+    return document
+
+#Technically would need to add call for find to return more than one
+@route('/getStock/<ticker>',method='GET')
+def GetStock(ticker):
+    try:
+        #check ticker is valid
+        if ticker is None:
+            raise ValueError("Ticker must be a valid stock ticker symbol")
+
+        #show the query is working and create the query
+        print("Looking for document, ticker: {}" .format(ticker))
+        query = {"Ticker": ticker}
+        #search db and return the query in json
+        result = DBConnection().find(query)
+        bottle.response.status = 200
+
+    except ValidationError as ve:
+        response.status = 404
+        abort(400, str(ve))
+
+    return json_util.dumps(result)
+
+
+
+@route('/updateStock/<ticker>',method='PUT')
+def UpdateStock(ticker):
+    try:
+        # get body data that will update ticker
+        body = request.body.getvalue().decode('utf-8')
+
+        if body is None:
+            raise ValueError("Request body empty, Body must have data to update ticker")
+
+        #create query to find the stock ticker
+        print("Looking for document, ticker: {} - body: {}" .format(ticker,body))
+        query = {"Ticker": ticker}
+
+        #get new values to update
+        values = {"$set":body}
+        print(values)
+
+        #update the db
+        DBConnection().update_many(query, values)
+
+        bottle.response.status = 200
+    except ValidationError as ve:
+        response.status = 404
+        abort(400, str(ve))
+    return body
+
+
+@route('/deleteStock/<ticker>',method='DELETE')
+def DeleteStock(ticker):
+    try:
+        # check ticker is valid
+        if ticker is None:
+            raise ValueError("Ticker must be a valid stock ticker symbol")
+
+        print("Looking for document, id: {}" .format(ticker))
+        query = {"Ticker": ticker}
+
+        #delete data from db
+        result = DBConnection().delete_many(query)
+        bottle.response.status = 200
+
+    except ValidationError as ve:
+        response.status = 404
+        abort(400, str(ve))
+
+    return json_util.dumps(result.deleted_count)
+
+
+
+@route('/create',method='POST')
+def AddDocument():
+    try:
+        id = bottle.request.json.get('id')
+        print("Creating document, ID: {}" .format(id))
+        document = {'id':request.json.get('id'),
+                    'certificate_number':request.json.get('certificate_number'),
+                    'business_name':request.json.get('business_name'),
+                    'date':request.json.get('date'),
+                    'result':request.json.get('result'),
+                    'sector':request.json.get('sector')
+                    }
+        bottle.response.status = 200
+        result = DBConnection().save(document)
+        print(document)
+    except ValidationError as ve:
+        response.status = 404
+        abort(400, str(ve))
+
+#Technically would need to add call for find to return more than one
+@route('/read',method='GET')
+def ReadDocumentByBusinessName(businessName ='DefaultName'):
+    try:
+        businessName = request.query.business_name
+        businessName = str(businessName).replace('"',"")
+        print("Looking for document, business_name: {}" .format(businessName))
+        query = {"business_name": businessName}
+        print(query)
+        result = DBConnection().find_one(query)
+        print(result)
+        bottle.response.status = 200
+    except ValidationError as ve:
+        response.status = 404
+        abort(400, str(ve))
+    return json_util.dumps(result)
+
+
+@route('/update',method='POST')
+def UpdateDocumentByID():
+    try:
+        id = request.query.id
+        result = request.query.result
+
+        id = str(id).replace('"',"")
+        result = str(result).replace('"', "")
+
+        print("Looking for document, id: {} - result: {}" .format(id,result))
+        query = {"id": id,"result":result}
+
+        #get new values to update
+        value = {'isUpdated': request.json.get('isUpdated')}
+        values = {"$set":value}
+        print(values)
+
+        #update the db
+        DBConnection().update_many(query, values)
+
+        bottle.response.status = 200
+    except ValidationError as ve:
+        response.status = 404
+        abort(400, str(ve))
+    return json_util.dumps(result)
+
+
+@route('/delete',method='DELETE')
+def DeleteDocumentByID():
+    try:
+        #get and format query param
+        id = request.query.id
+        id = str(id).replace('"',"")
+
+        print("Looking for document, id: {}" .format(id))
+        query = {"id": id}
+
+        #delete data from db
+        result = DBConnection().delete_many(query)
+
+        bottle.response.status = 200
+    except ValidationError as ve:
+        response.status = 404
+        abort(400, str(ve))
+    return json_util.dumps(result.deleted_count)
+
+
+if __name__ == '__main__':
+ #app.run(debug=True)
+ run(host='localhost', port=8080)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
