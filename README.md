@@ -24,7 +24,7 @@ A full [Code Review](https://youtu.be/FoAmb9bHvag) detailing where I began on ea
 ### Design & Engineering
 ##### [Design Narrative](https://youtu.be/Ngj79AbDDGk)
 ### Algorithms
-##### [Algorithms](https://youtu.be/--y6VB1QG1U)
+##### [Algorithms Narrative](https://youtu.be/--y6VB1QG1U)
 ### Databases
 Artifact three is a python API written using the bottle library. This APIs job is to run data intensive machine learning and data analytics models and then return the data in a json format. This API is supposed to be small and simply a bridge to join .Net and python together. This allows the creation of .Net web applications to be integrated with machine learning and data analysis projects from python. While a similar clustering model could have been made in .Net, python is one of the best languages to use for this. This artifact runs the clustering model to find similar books and book recommendations and then returns these results via json. This API showcases database interaction in a few ways. While there actually isn’t a ton of database calls in this application, the actual creation of an API and being able to get data, store data and transfer this data around is really what this artifact is all about. To me being able to not only make database calls but to actually handle the data is also critical. 
 
