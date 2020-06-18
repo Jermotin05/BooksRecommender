@@ -27,6 +27,8 @@ The initial idea behind this project came from the goodreadsbooks dataset from [
 ![clusters](https://user-images.githubusercontent.com/26797544/85059079-0ca85280-b171-11ea-8e67-f79860ceba82.PNG)
 
 ### Databases
+The final peice of the application was to create an API that would allows me to push the results from my clustering model back and forth between python and .Net. To do this i created a simpy python API that serilized everything to JSON and deserialized it on the other side. In addition to the API I wanted to use a database that wouled allow for more advanced data intensive procedures and support unstrucutred data if needed. For this I created a new MongoDB cluster and tied both the .Net app and the API to the same database. While Istore all of my blazor data in the database such as user infor and book data, I'm not storing any of my models results in the database. While I could store results to run farther analysis I dont have a need for now to store that data so when all the similar books and recommended books fro each user show up that data is actually coming stright from the API's clustering model each time. A future version would be sure to cache this data and only pull the data when needed for now the code only pulls back 7 similar book results and only a handful of recommendations. 
+![mongo](https://user-images.githubusercontent.com/26797544/85059856-55144000-b172-11ea-85a9-cb303638eb19.PNG)
 
 ## Narratives
 ### Design & Engineering
