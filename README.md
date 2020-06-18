@@ -10,7 +10,7 @@ The UI of this application is built using ASP.Net Core Blazor framework. Blazor 
 
 
 ## Code Review 
-A full [Code Review] (https://youtu.be/FoAmb9bHvag) detailing where I began on each artifact and my plans to improve each item.
+A full [Code Review](https://youtu.be/FoAmb9bHvag) detailing where I began on each artifact and my plans to improve each item.
 
 ## Artifacts
 ### Design & Engineering
@@ -18,8 +18,8 @@ A full [Code Review] (https://youtu.be/FoAmb9bHvag) detailing where I began on e
 ### Databases
 
 ## Narratives
-##### [Design Narrative] (https://youtu.be/Ngj79AbDDGk)
-##### [Algorithms] (https://youtu.be/--y6VB1QG1U)
+##### [Design Narrative](https://youtu.be/Ngj79AbDDGk)
+##### [Algorithms](https://youtu.be/--y6VB1QG1U)
 
 
 
