@@ -18,6 +18,9 @@ A full [Code Review](https://youtu.be/FoAmb9bHvag) detailing where I began on ea
 ### Design & Engineering
 This was a simple blazor app that was rapidly created to display a list of books the user has read, a list of all books with custom pagination. This has a very basic login and register page yet there is no authoprization and very basic authentication. The mian goal of this was to give a UI that would work with the clustering model to actually work as a delivery platofrm. While its not the best looking it serves its purpose for this project.
 ![login](https://user-images.githubusercontent.com/26797544/85058392-1087a500-b170-11ea-897c-da79d7fec37a.PNG)
+![index](https://user-images.githubusercontent.com/26797544/85058473-2b5a1980-b170-11ea-9034-9f0e18c0a100.PNG)
+![books](https://user-images.githubusercontent.com/26797544/85058506-38770880-b170-11ea-8763-7136643680bc.PNG)
+![details](https://user-images.githubusercontent.com/26797544/85058516-3a40cc00-b170-11ea-9d9e-4edd807f7974.PNG)
 
 ### Algorithms and Data Structure
 
