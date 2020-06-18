@@ -23,6 +23,8 @@ This was a simple blazor app that was rapidly created to display a list of books
 ![details](https://user-images.githubusercontent.com/26797544/85058516-3a40cc00-b170-11ea-9d9e-4edd807f7974.PNG)
 
 ### Algorithms and Data Structure
+The initial idea behind this project came from the goodreadsbooks dataset from [kaggle](https://www.kaggle.com/). Afteusing some started code I went ahead and begin basic EDA and design of my clustering model to help recommend similar books based on the euclidian distance of each node in my clustering model. The full jupyter notebook can be found in my [repo](https://github.com/Jermotin05/BooksRecommender/blob/master/Starter_%20Goodreads.ipynb)
+![clusters](https://user-images.githubusercontent.com/26797544/85059079-0ca85280-b171-11ea-8e67-f79860ceba82.PNG)
 
 ### Databases
 
