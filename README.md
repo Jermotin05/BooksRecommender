@@ -1,7 +1,7 @@
 # Book Recommender
-Southern New Hamphshire University
-CS 499 Final project
-06/21/2020
+-Southern New Hamphshire University
+-CS 499 Final project
+-06/21/2020
 
 ## Professional Self Asseessment
 While at Southern New Hampshire University (SNHU) I’ve had the privilege to work on several fun and challenging projects. SNHU has given me the chance to explore areas of computer science such as NOSQL databases and data mining that I’ve never really considered. While I’ve worked as a professional .Net developer for 2+ years now I was still able to learn new things everyday from SNHU and their collection of skilled and knowledgeable professors. This final capstone project I wanted to incorporate a mixture of my skills learned from work on the .Net side with a combination of python, NoSQL, and data mining that SNHU has allowed me to explore and grow into. While at SNHU I’ve also been exposed to a new form of collaboration and communication that is rare for a university. From the online nature of this program, I was often exposed to just how a team must communicate when working collaboratively but remotely.  Communication with professors and classmates was paramount to success. One of the greatest things I learned from SNHU was there is never just one way to do something. Professors here have always given room for creative license and allowed just enough freedom for me to follow my curiosities. Overall, my time here at SNHU has been very empowering and has taught me so much more than just programming. Its taught me about design, testing, communication and how to follow and execute business requirements to deliver a successful product. 
